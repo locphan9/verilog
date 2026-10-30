@@ -561,8 +561,83 @@ assign b_reg_out = b_reg >> 3;
 endmodule
 ```
 
+```verilog
+//refer to previous exercises for testbench
+```
+1.16 Use the conditional statements to design a circuit for the following expression: z1 = (x1 & x4) + (x2 & x3) + (x2 ~ ^ x4). Obtain the design module, the test bench module, and outputs.
+
+|     | 00  | 01  | 11  | 10  |
+| --- | --- | --- | --- | --- |
+| 00  | 0   | 0   | 0   | 0   |
+| 01  | 1   | 0   | 1   | 1   |
+| 11  | 1   | 1   | 1   | 1   |
+| 10  | 0   | 0   | 0   | 0   |
+$z1=(x1+x2)(x1+x3+x4')(x1'+x2)$
+```verilog
+module top_level_case_circuit (x1, x2, x3, x4);
+input   x1, x2, x3, x4;
+output  z1;
+assign z1 = ({x1, x2} = 2'b11) ? 1'b1 :
+			({x1, x2} = 2'b01) ? ({x3, x4} = 2'b01 ? 1'b0 : 1'b1) : 
+			1'b0;
+endmodule
+```
+
+```verilog
+module tb_top_level_case_circuit;
+
+reg x1, x2, x3, x4;
+wire z1;
+
+
+```
+
 1.19 Design a module to execute the four shift operations of shift left logical (SLL), shift left algebraic (SLA), shift right logical (SRL), and shift right algebraic (SRA) using the case statement. The operands to be shifted are 8-bit operands. Obtain the test bench providing four shift amounts for each shift operation and obtain the outputs.
 
 ```verilog
-module 
+module top_level (a, shift_code, shift_amount, shift_result);
+
+input   [7:0] a;
+input   [1:0] shift_code;
+input   [2:0] shift_amount;
+output  [7:0] shift_result;
+
+reg   [7:0] reg_a;
+reg   [7:0] shift_result;
+reg   [15:0] sra_reg;
+
+parameter sll = 2'b00,
+		  sla = 2'b01,
+		  srl = 2'b10,
+		  sra = 2'b11;
+		  
+always @ (a or shift_code)
+begin
+	case (shift_code)
+	sll:
+	begin
+	reg_a = a << shift_amount;
+	shift_result = reg_a;
+	end
+	sla:
+	begin
+	reg_a = a;
+	reg_a = reg_a << shift_ammount;
+	reg_a[7] = a[7];
+	shift_result = reg_a;
+	end
+	srl:
+	begin
+	reg_a = a >> shift_amount;
+	shift_result = reg_a;
+	end
+	sra:
+	begin
+	pad_reg = {{8{a[7]}},a};
+	pad_reg = pad_reg >> shift_amount;
+	shift_result = pad_reg[7:0];
+	end
+ends
+
+endmodule
 ```
